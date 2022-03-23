@@ -11,6 +11,7 @@
             <input class="border my-2 mx-2" type="text" name="username" placeholder="Username">
             <input class="border my-2 mx-2" type="email" name="email" placeholder="Email">
             <input class="border my-2 mx-2" type="password" name="password" placeholder="Password">
+            <input class="border my-2 mx-2" type="password" name="password_confirmation" placeholder="Confirm Password">
             <button class="btn bg-blue-500" type="submit">Register</button>
         </div>
     </form>

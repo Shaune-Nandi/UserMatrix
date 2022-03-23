@@ -21,7 +21,7 @@ class UserController extends Controller
             'name' => 'required',
             'username' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:5'
+            'password' => 'required|min:5|confirmed'
         ]);
 
         $registerDetails['password'] = bcrypt($registerDetails['password']);
