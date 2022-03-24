@@ -52,6 +52,9 @@ class UserController extends Controller
             session()->regenerate();
             return redirect('/dashboard');
         }
+        else{
+            return redirect('/login');
+        }
     }
 
     public function logout(){
