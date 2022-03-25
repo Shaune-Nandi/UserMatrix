@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
+use App\Models\Role;
+use App\Models\Permission;
+
+
 
 use Illuminate\Http\Request;
 
@@ -18,7 +22,8 @@ class UserController extends Controller
 
     public function store_register(){
         $registerDetails = request()->validate([
-            'name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
             'username' => 'required',
             'email' => 'required|email',
             'password' => 'required|min:5|confirmed'
@@ -30,7 +35,7 @@ class UserController extends Controller
 
         auth()->login($user);
 
-        return redirect('/dashboard');
+        return redirect('/dashboard')->with('success', 'Registration successfull');
     }
 
 
@@ -50,7 +55,8 @@ class UserController extends Controller
 
         if(auth()->attempt($loginDetails)){
             session()->regenerate();
-            return redirect('/dashboard');
+
+            return redirect('/dashboard')->with('success', 'welcome back');
         }
         else{
             return redirect('/login');
@@ -59,6 +65,55 @@ class UserController extends Controller
 
     public function logout(){
         auth()->logout();
-        return redirect('/');
+        return redirect('/')->with('success', 'You have logged out successfully');
     }
+
+
+    public function show_roles(){
+        $role = Role::orderBy('created_at', 'desc')->get();
+        return view('roles', ['roles' => $role]);
+    }
+
+    public function create_role(){
+        return view('create_role');
+    }
+
+    public function save_created_role(){
+        $RoleDetails = request()->validate([
+            'name' => 'required',
+            'slug' => 'required'
+        ]);
+
+        $role = Role::create($RoleDetails);
+
+        //$permission = Permission::find(1);
+
+        //$role2 = Role::find($role->id);
+        //$role2->permissions()->attach($permission);
+
+
+        return redirect('/roles')->with('success', 'New role created successfully');
+    }
+
+    public function create_permission() {
+        return view('create_permission');
+    }
+
+    public function save_created_permission() {
+        $PermissionDetails = request()->validate([
+            'permission_name' => 'required',
+            'slug' => 'required'
+        ]);
+
+        $permission = Permission::create($PermissionDetails);
+
+        return redirect('/permissions')->with('success', 'New permission created successfully');
+    }
+
+    public function show_permissions(){
+        $permission = Permission::all();
+        return 9000000;
+        //return view('permissions', ['permission' => $permission]);
+    } 
+    
 }

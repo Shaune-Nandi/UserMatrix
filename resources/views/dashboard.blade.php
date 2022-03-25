@@ -1,14 +1,28 @@
 @extends('layouts.app')
 
+
 @section('title', 'Dashboard')
 
 @section('body')
 
-    @auth
-        <a href="/logout">Logout</a> 
-        {{ auth()->user()->name }}
-    @endauth
+        {{ session('success') }}, {{ auth()->user()->first_name }}
+    
 
-    <div class="text-4xl">Dashboard User Matrix</div>
+    @section('alert_success')
+        @if(session('success'))
+            {{ session('success') }}
+        @endif
+    @endsection
+
+    
+
+
+
+
+    <div class="text-4xl">
+        Dashboard User Matrix
+
+    </div>
+    <a href="/roles">show roles</a>
 
 @endsection

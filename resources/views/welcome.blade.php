@@ -3,9 +3,9 @@
 @section('title', 'Welcome')
 
 @section('body')
-    <a href="/register">Register</a>
-    <a href="/login">Login</a>
 
-    <div class="text-4xl">User Matrix (Welcome Page)</div>
+    <div class="h-40 text-center text-4xl dark:text-gray-400">
+        User Matrix Welcome
+    </div>
 
 @endsection
