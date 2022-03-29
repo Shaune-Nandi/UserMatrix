@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
-            $table->string('permission_name');
+            $table->string('name');
             $table->string('slug');
             $table->timestamps();
         });
@@ -31,3 +31,9 @@ return new class extends Migration
         Schema::dropIfExists('permissions');
     }
 };
+
+
+// INSERT INTO `permissions` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES (NULL, 'Create user', 'create', NOW(), NOW());
+// INSERT INTO `permissions` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES (NULL, 'View user', 'view', NOW(), NOW());
+// INSERT INTO `permissions` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES (NULL, 'Update user', 'update', NOW(), NOW());
+// INSERT INTO `permissions` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES (NULL, 'Delete user', 'delete', NOW(), NOW());

@@ -16,9 +16,16 @@ class UserController extends Controller
     }
 
 
+
+
+
     public function show_register(){
-        return view('register');
+        $role = Role::all();
+        return view('register', compact('role'));
     }
+
+
+
 
     public function store_register(){
         $registerDetails = request()->validate([
@@ -26,12 +33,16 @@ class UserController extends Controller
             'last_name' => 'required',
             'username' => 'required',
             'email' => 'required|email',
+            'role' => 'required',
             'password' => 'required|min:5|confirmed'
         ]);
 
         $registerDetails['password'] = bcrypt($registerDetails['password']);
 
+        $role = Role::find(request('role'));
+
         $user = User::create($registerDetails);
+        $user->roles()->attach($role);
 
         auth()->login($user);
 
@@ -41,9 +52,12 @@ class UserController extends Controller
 
 
 
+
     public function show_login(){
         return view('login');
     }
+
+
 
 
 
@@ -63,10 +77,16 @@ class UserController extends Controller
         }
     }
 
+
+
+
     public function logout(){
         auth()->logout();
         return redirect('/')->with('success', 'You have logged out successfully');
     }
+
+
+
 
 
     public function show_roles(){
@@ -74,30 +94,49 @@ class UserController extends Controller
         return view('roles', ['roles' => $role]);
     }
 
+
+
+
+
     public function create_role(){
         return view('create_role');
     }
 
+
+
+
+
     public function save_created_role(){
         $RoleDetails = request()->validate([
             'name' => 'required',
-            'slug' => 'required'
+            'slug' => 'required',
+            'permission_id' => 'required'
         ]);
 
-        $role = Role::create($RoleDetails);
+        $permission_id = request('permission_id');
 
-        //$permission = Permission::find(1);
+        $permission = Permission::find($permission_id);
 
-        //$role2 = Role::find($role->id);
-        //$role2->permissions()->attach($permission);
+        if ($permission) {
+            $role = Role::create($RoleDetails);     
+            $role->permissions()->attach($permission);            
+            return redirect('/roles')->with('success', 'New role created successfully');
+        }
 
-
-        return redirect('/roles')->with('success', 'New role created successfully');
+        return 45673897845273891;
     }
+
+
+
+
 
     public function create_permission() {
         return view('create_permission');
     }
+
+
+
+
 
     public function save_created_permission() {
         $PermissionDetails = request()->validate([
@@ -110,10 +149,54 @@ class UserController extends Controller
         return redirect('/permissions')->with('success', 'New permission created successfully');
     }
 
+
+
+
+
     public function show_permissions(){
         $permission = Permission::all();
-        return 9000000;
-        //return view('permissions', ['permission' => $permission]);
+        return view('permissions', ['permission' => $permission]);
     } 
+
+
+    public function update_role(Role $role){
+        $permission = Permission::all();
+        return view('edit_role', compact('role','permission'));
+    }
+
+    public function save_updated_role(Role $role, Request $request){
+        request()->validate([
+            'name' => 'required',
+            'slug' => 'required'
+        ]);
+
+        $role = Role::find(request('id'));
+
+        $role->update([
+            'name' => $request->name,
+            'slug' => $request->slug,
+        ]);
+
+        $role->touch();
+
+        return redirect('/roles')->with('success', 'Role updated successfully');
+
+    }
+
+
+
+
+
+    public function delete_role(){
+        //$permission = Permission::find($permission_id);
+
+
+        $role = Role::find(request('id'));
+        $role->delete($role);
+        $role->permissions()->detach();            
+
+
+        return redirect('/roles')->with('success','Role deleted successfully');
+    }
     
 }
