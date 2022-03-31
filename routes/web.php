@@ -50,6 +50,9 @@ Route::middleware('auth')->group(function() {
     //Route::post('/roles/update', [UserController::class, 'save_updated_role']);
     Route::post('/roles/delete/{role}', [UserController::class, 'delete_role']);
 
+    Route::get('/user/create', [UserController::class, 'create_new_user']);
+    Route::post('/user/create', [UserController::class, 'save_created_user']);
+
 
 });
 

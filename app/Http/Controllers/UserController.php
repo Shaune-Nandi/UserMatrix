@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
+use Illuminate\Support\Facades\DB;
 
 use App\Policies\RolePolicy;
 
@@ -14,7 +15,9 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     public function show_dashboard(){
-        return view('dashboard');
+        $user = User::all();
+        $role = Role::all();
+        return view('dashboard', compact('user', 'role'));
     }
 
 
@@ -88,7 +91,7 @@ class UserController extends Controller
 
 
     public function show_roles(Role $role){
-        // $this->authorize('view', Role::class);
+        $this->authorize('adminsOnlyAuthorization', Role::class);
 
         $role = Role::orderBy('created_at', 'desc')->get();
         return view('roles', ['roles' => $role]);
@@ -202,4 +205,78 @@ class UserController extends Controller
         return redirect('/roles')->with('success','Role deleted successfully');
     }
     
+
+
+
+
+    public function create_new_user() {
+        $role = Role::all(); 
+        return view('create_user', ['role' => $role]);
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public function save_created_user() {
+
+        $userDetails = request()->validate([
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'username' => 'required',
+            'email' => 'required|email',
+            'role' => 'required',
+            'password' => 'required'
+        ]);
+
+        $userDetails['password'] = bcrypt($userDetails['password']);
+
+
+        $user = User::create([
+            'first_name' => request('first_name'),
+            'last_name' => request('last_name'),
+            'username' => request('username'),
+            'email' => request('email'),
+            'password' => request('password'),
+        ]);
+
+        $user_id = DB::table('users')->where('username', request('username'))->value('id');
+        
+        $user = User::find($user_id);
+
+        $PPP = request('role');
+
+        $count = count($PPP);
+
+
+
+         for ($i=0; $i < $count; $i++) { 
+            $role = Role::find($PPP[$i]); //where('id', $PPP[$i])->get();
+            //dd($user->id);
+            //echo $user .'<br><br><br><br><br><br>';
+            //$role->users()->attach($user);
+            $user->roles()->attach($role->id);
+        }
+
+        return redirect('/dashboard')->with('success','User created and assigned successfully');
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
 }
