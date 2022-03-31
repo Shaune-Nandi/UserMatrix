@@ -140,6 +140,75 @@ k
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{{ auth()->user()->username }}
+
+@foreach($user->roles as $role)
+    {{ $role->name }}
+@endforeach
+
+
+
+
+
+
+
+
+
+
+
+
+
 @foreach($roles as $roles)
 
 <form action="/roles/update/{{ $roles->id }}" method="POST">

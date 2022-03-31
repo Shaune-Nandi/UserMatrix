@@ -5,6 +5,8 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
 
+use App\Policies\RolePolicy;
+
 
 
 use Illuminate\Http\Request;
@@ -52,13 +54,9 @@ class UserController extends Controller
 
 
 
-
     public function show_login(){
         return view('login');
     }
-
-
-
 
 
     public function store_login(){
@@ -89,7 +87,9 @@ class UserController extends Controller
 
 
 
-    public function show_roles(){
+    public function show_roles(Role $role){
+        // $this->authorize('view', Role::class);
+
         $role = Role::orderBy('created_at', 'desc')->get();
         return view('roles', ['roles' => $role]);
     }
@@ -98,8 +98,9 @@ class UserController extends Controller
 
 
 
-    public function create_role(){
-        return view('create_role');
+    public function create_role(Role $role){
+        $permission = Permission::all();
+        return view('create_role', compact('permission'));
     }
 
 
@@ -110,10 +111,10 @@ class UserController extends Controller
         $RoleDetails = request()->validate([
             'name' => 'required',
             'slug' => 'required',
-            'permission_id' => 'required'
+            'checkbox' => 'required'
         ]);
 
-        $permission_id = request('permission_id');
+        $permission_id = request('checkbox');
 
         $permission = Permission::find($permission_id);
 
@@ -123,7 +124,7 @@ class UserController extends Controller
             return redirect('/roles')->with('success', 'New role created successfully');
         }
 
-        return 45673897845273891;
+        return 5000000;
     }
 
 
@@ -165,6 +166,8 @@ class UserController extends Controller
     }
 
     public function save_updated_role(Role $role, Request $request){
+
+
         request()->validate([
             'name' => 'required',
             'slug' => 'required'
