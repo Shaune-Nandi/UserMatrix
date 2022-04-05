@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Permission;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -24,25 +25,100 @@ class RolePolicy
         //
     }
 
+    public function ppp(User $user) {
+            $rolesAssignedToTheUser = DB::table('role_user')
+                ->where('user_id', $user->id)
+                ->get('role_id');
 
-    public function adminsOnlyAuthorization(User $user){
+            $noOfRolesAssignedToTheUser = $rolesAssignedToTheUser->count();
 
-        $user_id = $user->id; // The id of the current logged in user
+            for ($i=0; $i < $noOfRolesAssignedToTheUser; $i++) { 
+                echo $rolesAssignedToTheUser[$i]->role_id . '=====>';
 
-        $Role_admin_id = DB::table('roles') // Retrievs the id of admin role
-            ->where('slug', 'admin')
-            ->value('id');
+                $role_id = $rolesAssignedToTheUser[$i]->role_id;
+
+                $permissionsAssociatedToTheRole = DB::table('permission_role')
+                    ->where('role_id', $role_id)
+                    ->get('permission_id');
+
+                $noOfPermissionsAssociatedToTheRole = $permissionsAssociatedToTheRole->count();
+                for ($ii=0; $ii < $noOfPermissionsAssociatedToTheRole; $ii++) { 
+                    $permission_id = $permissionsAssociatedToTheRole[$ii]->permission_id;
+
+                    $permissionDetails = DB::table('permissions')
+                        ->where('id', $permission_id)
+                        ->get();
+
+                        
+                    echo $permission_id . '==>' . $permissionDetails . '<br>';
+                }
+                echo '<br><br>';
+
+            }
 
 
-        $role = DB::table('role_user')
-            ->where('user_id', $user_id)
-            ->where('role_id', $Role_admin_id)
-            ->count();
 
-        return $role === 1
-            ? Response::allow()
-            : Response::deny('Only Admins can view this page');
 
+            //$noOfPermissionsAssociatedToTheRole = $permissionsAssociatedToTheRole->count();
+
+            $count = 0;
+
+            
+
+            //dd($rolesAssignedToTheUser);
+
+    }
+
+
+    public function viewOnly(User $user){
+
+        $items = array();
+        foreach ($user->roles as $role) {
+            foreach ($role->permissions as $permission) {
+                array_push($items, $permission->slug);
+            }
+        }
+
+        return in_array('view', $items);
+    }
+
+
+    public function createOnly(User $user){
+
+        $items = array();
+        foreach ($user->roles as $role) {
+            foreach ($role->permissions as $permission) {
+                array_push($items, $permission->slug);
+            }
+        }
+
+        return in_array('create', $items);
+    }
+
+
+    public function updateOnly(User $user){
+
+        $items = array();
+        foreach ($user->roles as $role) {
+            foreach ($role->permissions as $permission) {
+                array_push($items, $permission->slug);
+            }
+        }
+
+        return in_array('update', $items);
+    }
+
+
+    public function deleteOnly(User $user){
+
+        $items = array();
+        foreach ($user->roles as $role) {
+            foreach ($role->permissions as $permission) {
+                array_push($items, $permission->slug);
+            }
+        }
+
+        return in_array('delete', $items);
     }
 
 }

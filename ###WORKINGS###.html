@@ -131,6 +131,11 @@ k
 
 
 
+php artisan make:factory PermissionFactory --model=Permission
+php artisan make:factory RoleFactory --model=Role
+
+php artisan tinker
+Permission::factory()->count(1)->create()
 
 
 
@@ -140,9 +145,25 @@ k
 
 
 
+public function adminsOnlyAuthorization(User $user){
+
+    $user_id = $user->id; // The id of the current logged in user
+
+    $Role_admin_id = DB::table('roles') // Retrievs the id of admin role
+        ->where('slug', 'admin')
+        ->value('id');
 
 
+    $role = DB::table('role_user')
+        ->where('user_id', $user_id)
+        ->where('role_id', $Role_admin_id)
+        ->count();
 
+    return $role === 1
+        ? Response::allow()
+        : Response::deny('Only Admins can view this page');
+
+}
 
 
 
