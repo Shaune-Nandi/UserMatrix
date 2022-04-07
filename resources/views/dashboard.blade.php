@@ -22,7 +22,7 @@
 
 
     <div class="text-center">
-        @can(['updateOnly', 'deleteOnly'], App\Models\Role::class)<a class="text-blue-500 hover:underline" href="/user/create">Create new user</a> | @endcan
+        @can('create_user', App\Models\User::class)<a class="text-blue-500 hover:underline" href="/user/create">Create new user</a> | @endcan
         <a class="text-blue-500 hover:underline" href="/roles">Roles</a> | 
         <a class="text-blue-500 hover:underline" href="/permissions">Permissions</a>
     </div>
@@ -36,7 +36,9 @@
                         <th scope="col" class="px-6 py-3">Name</th>
                         <th scope="col" class="px-6 py-3">Email</th>
                         <th scope="col" class="px-6 py-3">Roles</th>
-                        @can(['updateOnly', 'deleteOnly'], App\Models\Role::class)<th scope="col" class="px-6 py-3"></th>@endcan
+                        @canany(['update_user', 'delete_user'], App\Models\User::class)
+                            <th scope="col" class="px-6 py-3"></th>
+                        @endcanany
                     </tr>
                 </thead>
                 <tbody>
@@ -53,15 +55,19 @@
                                 </td>
                                 <td class="px-6 py-4 text-red-500 font-bold">
                                     @foreach($user->roles as $role)
-                                        {{ $role->slug }}
+                                        {{ $role->name }}
                                     @endforeach
                                 </td>
-                                @can(['updateOnly', 'deleteOnly'], $role)
-                                <td class="px-6 py-4 text-right">
-                                    <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="assign_role_btn" value="Assign Role" formaction="/user/roles/{{ $user->id }}">
-                                    | <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="delete_btn" value="Delete User" formaction="/user/delete/{{ $user->id }}">
-                                </td>
-                                @endcan
+                                @canany(['update_user', 'delete_user'], App\Models\User::class)
+                                    <td class="px-6 py-4 text-right">
+                                        @can('update_user', App\Models\User::class)    
+                                            <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="assign_role_btn" value="Assign Role" formaction="/user/roles/{{ $user->id }}">
+                                        @endcan
+                                        @can('delete_user', App\Models\User::class)
+                                            | <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="delete_btn" value="Delete User" formaction="/user/delete/{{ $user->id }}">
+                                        @endcan
+                                    </td>
+                                @endcanany                                
                             </form>
                         </tr>
                     @endforeach
@@ -71,5 +77,4 @@
     </div>
 
 
-
-@endsection
+@endsection  

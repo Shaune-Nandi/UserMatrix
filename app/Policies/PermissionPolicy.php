@@ -2,16 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\Permission;
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Auth\Access\Response;
 
-
-
-class RolePolicy
+class PermissionPolicy
 {
     use HandlesAuthorization;
 
@@ -27,21 +21,8 @@ class RolePolicy
 
 
 
-
-    public function view_role(User $user){
-
-        $items = array();
-        foreach ($user->roles as $role) {
-            foreach ($role->permissions as $permission) {
-                array_push($items, $permission->slug);
-            }
-        }
-
-        return in_array('view_role', $items);
-    }
-
-
-    public function create_role(User $user){
+    
+    public function view_permission(User $user){
 
         $items = array();
         foreach ($user->roles as $role) {
@@ -50,11 +31,11 @@ class RolePolicy
             }
         }
 
-        return in_array('create_role', $items);
+        return in_array('view_permission', $items);
     }
 
 
-    public function update_role(User $user){
+    public function create_permission(User $user){
 
         $items = array();
         foreach ($user->roles as $role) {
@@ -63,11 +44,11 @@ class RolePolicy
             }
         }
 
-        return in_array('update_role', $items);
+        return in_array('create_permission', $items);
     }
 
 
-    public function delete_role(User $user){
+    public function update_permission(User $user){
 
         $items = array();
         foreach ($user->roles as $role) {
@@ -76,7 +57,24 @@ class RolePolicy
             }
         }
 
-        return in_array('delete_role', $items);
+        return in_array('update_permission', $items);
     }
+
+
+    public function delete_permission(User $user){
+
+        $items = array();
+        foreach ($user->roles as $role) {
+            foreach ($role->permissions as $permission) {
+                array_push($items, $permission->slug);
+            }
+        }
+
+        return in_array('delete_permission', $items);
+    }
+
+
+
+
 
 }
