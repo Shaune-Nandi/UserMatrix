@@ -18,9 +18,11 @@
         </div>
     @endif
 
-    <div class="flex justify-center mt-5">
-        <a href="/permissions/create" class="justify-self-center text-md text-blue-600 dark:text-blue-500 hover:underline">create a new permission</a>
-    </div>
+    @can('create_permission', App\Models\Permission::class)
+        <div class="flex justify-center mt-5">
+            <a href="/permissions/create" class="justify-self-center text-md text-blue-600 dark:text-blue-500 hover:underline">create a new permission</a>
+        </div>
+    @endcan
     
     <div class="grid">
         <div class="justify-self-center mt-5 w-1/2 relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -29,7 +31,7 @@
                     <tr>
                         <th scope="col" class="px-6 py-3">Permission Name</th>
                         <th scope="col" class="px-6 py-3">Slug</th>
-                        <th scope="col" class="px-6 py-3"></th>
+                        @canany(['update_permission', 'delete_permission'], App\Models\Permission::class)<th scope="col" class="px-6 py-3"></th>@endcanany
                     </tr>
                 </thead>
                 <tbody>
@@ -44,10 +46,16 @@
                                 <td class="px-6 py-4">
                                     {{ $permission->slug }}
                                 </td>
-                                <td class="px-6 py-4 text-right">
-                                    <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="update_btn" value="Update"> | 
-                                    <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="delete_btn" value="Delete" formaction="/permission/delete/{{ $permission->id }}">
-                                </td>
+                                @canany(['update_permission', 'delete_permission'], App\Models\Permission::class)
+                                    <td class="px-6 py-4 text-right">
+                                        @can('update_permission', App\Models\Permission::class)
+                                            <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="update_btn" value="Update">
+                                        @endcan
+                                        @can('delete_permission', App\Models\Permission::class)
+                                             | <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="delete_btn" value="Delete" formaction="/permission/delete/{{ $permission->id }}">
+                                        @endcan
+                                    </td>
+                                @endcanany
                             </form>
                         </tr>
                     @endforeach

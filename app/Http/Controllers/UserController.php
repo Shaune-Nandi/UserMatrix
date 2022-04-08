@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     public function show_dashboard(){
-        $user = User::all();
+        $user = User::orderBy('updated_at', 'DESC')->get();
         $role = Role::all();
         return view('dashboard', compact('user', 'role'));
     }
@@ -81,14 +81,14 @@ class UserController extends Controller
 
 
     public function create_new_user() {
-        $this->authorize('createOnly', Role::class);
-        $role = Role::all(); 
+        $this->authorize('create_user', User::class);
+        $role = Role::orderBy('updated_at', 'DESC')->get(); 
         return view('create_user', ['role' => $role]);
     }
 
 
     public function save_created_user() {
-        $this->authorize('createOnly', Role::class);
+        $this->authorize('create_user', User::class);
         $userDetails = request()->validate([
             'first_name' => 'required',
             'last_name' => 'required',
@@ -105,7 +105,7 @@ class UserController extends Controller
             'last_name' => request('last_name'),
             'username' => request('username'),
             'email' => request('email'),
-            'password' => request('password'),
+            'password' => $userDetails['password'],
         ]);
 
         $user_id = DB::table('users')->where('username', request('username'))->value('id');
@@ -125,7 +125,7 @@ class UserController extends Controller
 
 
     public function show_user_roles() {
-        $this->authorize('createOnly', Role::class);
+        $this->authorize('create_user', User::class);
         $roles = Role::all();
 
         $user_id = DB::table('users')->where('id', request('id'))->value('id');
@@ -136,7 +136,7 @@ class UserController extends Controller
 
    
     public function save_user_roles() {
-        $this->authorize('createOnly', Role::class);
+        $this->authorize('create_user', User::class);
         $user = User::find(request('user_id'));
         $count = count(request('role'));
 
@@ -157,7 +157,7 @@ class UserController extends Controller
 
     
     public function delete_user(){
-        $this->authorize('deleteOnly', Role::class);
+        $this->authorize('delete_user', User::class);
 
         $user = User::find(request('id'));
         $user->delete($user);
@@ -180,14 +180,14 @@ class UserController extends Controller
 
 
     public function create_role(Role $role){
-        $this->authorize('createOnly', Role::class);
+        $this->authorize('create_role', Role::class);
         $permission = Permission::all();
         return view('create_role', compact('permission'));
     }
 
 
     public function save_created_role(){
-        $this->authorize('createOnly', Role::class);
+        $this->authorize('create_role', Role::class);
         $RoleDetails = request()->validate([
             'name' => 'required',
             'slug' => 'required',
@@ -208,7 +208,7 @@ class UserController extends Controller
 
 
     public function update_role(Role $role){
-        $this->authorize('updateOnly', Role::class);
+        $this->authorize('update_role', Role::class);
 
         $permission = Permission::all();
         return view('edit_role', compact('role','permission'));
@@ -236,7 +236,7 @@ class UserController extends Controller
 
 
     public function show_role_permissions() {
-        $this->authorize('updateOnly', Role::class);
+        $this->authorize('update_role', Role::class);
 
         $permissions = Permission::all();
         $role = Role::orderBy('updated_at','DESC')->first();
@@ -246,7 +246,7 @@ class UserController extends Controller
 
     
     public function save_role_permissions() {
-        $this->authorize('updateOnly', Role::class);
+        $this->authorize('update_role', Role::class);
 
         $rolePermissionDetails = request()->validate([
             'permission' => 'required'
@@ -268,7 +268,7 @@ class UserController extends Controller
 
 
     public function delete_role(){
-        $this->authorize('deleteOnly', Role::class);
+        $this->authorize('delete_role', Role::class);
 
         $role = Role::find(request('id'));
         $role->delete($role);
@@ -284,13 +284,13 @@ class UserController extends Controller
 //Permissions
 
     public function create_permission() {
-        $this->authorize('createOnly', Role::class);
+        $this->authorize('create_permission', Permission::class);
         return view('create_permission');
     }
 
 
     public function save_created_permission() {
-        $this->authorize('createOnly', Role::class);
+        $this->authorize('create_permission', Permission::class);
         $PermissionDetails = request()->validate([
             'name' => 'required',
             'slug' => 'required'
@@ -309,7 +309,7 @@ class UserController extends Controller
 
 
     public function update_permission(){
-        $this->authorize('updateOnly', Role::class);
+        $this->authorize('update_permission', Permission::class);
 
         $permission = Permission::find(request('id'));
         return view('edit_permission', compact('permission'));
@@ -317,7 +317,7 @@ class UserController extends Controller
 
 
     public function save_updated_permission(){
-        $this->authorize('updateOnly', Role::class);
+        $this->authorize('update_permission', Permission::class);
 
         request()->validate([
             'name' => 'required',
@@ -338,7 +338,7 @@ class UserController extends Controller
 
 
     public function delete_permission(){
-        $this->authorize('deleteOnly', Role::class);
+        $this->authorize('delete_permission', Permission::class);
 
         $permission = Permission::find(request('id'));
         $permission->delete($permission);

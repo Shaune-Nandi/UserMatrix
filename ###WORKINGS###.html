@@ -153,6 +153,8 @@ public function adminsOnlyAuthorization(User $user){
         ->where('slug', 'admin')
         ->value('id');
 
+    $Role
+
 
     $role = DB::table('role_user')
         ->where('user_id', $user_id)

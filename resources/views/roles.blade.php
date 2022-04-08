@@ -18,9 +18,11 @@
         </div>
     @endif
 
-    <div class="flex justify-center mt-5">
-        <a href="/roles/create" class="justify-self-center text-md text-blue-600 dark:text-blue-500 hover:underline">create a new role</a>
-    </div>
+    @can('create_role', App\Models\Role::class)
+        <div class="flex justify-center mt-5">
+            <a href="/roles/create" class="justify-self-center text-md text-blue-600 dark:text-blue-500 hover:underline">create a new role</a>
+        </div>
+    @endcan
     
     <div class="grid">
         <div class="justify-self-center mt-5 w-3/4 relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -30,7 +32,7 @@
                         <th scope="col" class="px-6 py-3">Role Name</th>
                         <th scope="col" class="px-6 py-3">Slug</th>
                         <th scope="col" class="px-6 py-3">Permissions</th>
-                        @can('adminsOnlyAuthorization', $roles)<th scope="col" class="px-6 py-3"></th>@endcan
+                        @canany(['updateOnly', 'deleteOnly'], App\Models\Role::class)<th scope="col" class="px-6 py-3"></th>@endcanany
                     </tr>
                 </thead>
                 <tbody>
@@ -47,16 +49,19 @@
                                 </td>
                                 <td class="px-6 py-4 text-lime-500">
                                     @foreach($roles->permissions as $permission)
-                                        {{ $permission->slug }}
+                                        <div>{{ $permission->slug }}</div>
                                     @endforeach
                                 </td>
-                                @can('adminsOnlyAuthorization', $roles)
+                                @canany(['update_role', 'delete_role'], App\Models\Role::class)
                                     <td class="px-6 py-4 text-right">
-                                        <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="update_btn" value="Update">
-                                        <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="delete_btn" value="Delete" formaction="/roles/delete/{{ $roles->id }}">
+                                        @can('update_role', App\Models\Role::class)
+                                            <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="update_btn" value="Update">
+                                        @endcan
+                                        @can('delete_role', App\Models\Role::class)
+                                             | <input class="font-medium text-blue-600 dark:text-blue-500 hover:underline" type="submit" name="delete_btn" value="Delete" formaction="/roles/delete/{{ $roles->id }}">
+                                        @endcan
                                     </td>
-                                @endcan
-
+                                @endcanany
                             </form>
                         </tr>
                     @endforeach

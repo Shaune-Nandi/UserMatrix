@@ -2,16 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\Permission;
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Auth\Access\Response;
 
-
-
-class RolePolicy
+class UserPolicy
 {
     use HandlesAuthorization;
 
@@ -26,9 +20,8 @@ class RolePolicy
     }
 
 
-
-
-    public function view_role(User $user){
+    
+    public function view_user(User $user){
 
         $items = array();
         foreach ($user->roles as $role) {
@@ -37,11 +30,11 @@ class RolePolicy
             }
         }
 
-        return in_array('view_role', $items);
+        return in_array('view_user', $items);
     }
 
 
-    public function create_role(User $user){
+    public function create_user(User $user){
 
         $items = array();
         foreach ($user->roles as $role) {
@@ -50,11 +43,11 @@ class RolePolicy
             }
         }
 
-        return in_array('create_role', $items);
+        return in_array('create_user', $items);
     }
 
 
-    public function update_role(User $user){
+    public function update_user(User $user){
 
         $items = array();
         foreach ($user->roles as $role) {
@@ -63,11 +56,11 @@ class RolePolicy
             }
         }
 
-        return in_array('update_role', $items);
+        return in_array('update_user', $items);
     }
 
 
-    public function delete_role(User $user){
+    public function delete_user(User $user){
 
         $items = array();
         foreach ($user->roles as $role) {
@@ -76,7 +69,7 @@ class RolePolicy
             }
         }
 
-        return in_array('delete_role', $items);
+        return in_array('delete_user', $items);
     }
 
 }
